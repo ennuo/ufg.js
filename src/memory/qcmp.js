@@ -1,10 +1,11 @@
 const Data = require('./data');
 
 const readHeader = data => {
+    data.offset = 0;
     const magic = data.str(4);
     let endian = '';
     if (magic == 'PMCQ') endian = 'le';
-    else if (magic != 'QCMP') throw new Error("File is not compressed!");
+    else if (magic != 'QCMP') return null;
     const int = data[`u32${endian}`].bind(data);
     const short = data[`u16${endian}`].bind(data);
     const long = data[`u64${endian}`].bind(data);
@@ -22,7 +23,9 @@ const readHeader = data => {
 module.exports = decompress = data => {
     if (Buffer.isBuffer(data) || typeof data === 'string')
         data = new Data(data);
-    const { compressedSize, uncompressedSize } = readHeader(data);
+    const header = readHeader(data);
+    if (!header) return data.buffer;
+    const { compressedSize, uncompressedSize } = header;
     const buffer = [...data.bytes(compressedSize), new Array(uncompressedSize).fill(0) ];
 
     const cache = {
