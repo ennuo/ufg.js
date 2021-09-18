@@ -41,6 +41,7 @@ module.exports = class Data {
         this.buffer = buffer;
         this.length = buffer?.length || 0;
         this.offset = 0;
+        return this;
     }
 
     bytes = input => {
