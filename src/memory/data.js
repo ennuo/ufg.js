@@ -121,6 +121,14 @@ module.exports = class Data {
             return this.buffer.readFloatBE((this.offset += 4) - 4);
     }
 
+    f32le = input => {
+        if (!input) input = 0;
+        if (this.isWriting) 
+            this.buffer.writeFloatLE(input, (this.offset += 4) - 4);
+        else
+            return this.buffer.readFloatLE((this.offset += 4) - 4);
+    }
+
     f16 = input => {
         if (!input) input = 0;
         const buffer = new ArrayBuffer(2);
