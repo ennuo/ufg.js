@@ -86,6 +86,12 @@ module.exports = class Data {
         else return this.buffer.readUInt32BE((this.offset += 4) - 4);
     }
 
+    u64 = input => {
+        if (input === -1) input = 0xFFFFFFFFFFFFFFFFn;
+        if (this.isWriting) this.buffer.writeBigUInt64BE(BigInt(input), (this.offset += 8) - 8);
+        else return Number(this.buffer.readBigUInt64BE((this.offset += 8) - 8));
+    }
+
     f32 = input => {
         if (!input) input = 0;
         if (this.isWriting) 
