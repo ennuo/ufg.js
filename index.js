@@ -1,3 +1,4 @@
 module.exports = {
-    Types: require('./src/globals/types')
+    Types: require('./src/globals/types'),
+    Data: require('./src/memory/data')
 }
