@@ -73,6 +73,14 @@ module.exports = class Data {
             return this.buffer.readUInt16BE((this.offset += 2) - 2);
     }
 
+    u16le = input => {
+        if (input === -1) input = 0xFFFF;
+        if (this.isWriting) 
+            this.buffer.writeUInt16LE(input, (this.offset += 2) - 2);
+        else 
+            return this.buffer.readUInt16LE((this.offset += 2) - 2);
+    }
+
     s16 = input => {
         if (this.isWriting) 
             this.buffer.writeInt16BE(input, (this.offset += 2) - 2);
@@ -86,10 +94,22 @@ module.exports = class Data {
         else return this.buffer.readUInt32BE((this.offset += 4) - 4);
     }
 
+    u32le = input => {
+        if (input === -1) input = 0xFFFFFFFF;
+        if (this.isWriting) this.buffer.writeUInt32LE(input, (this.offset += 4) - 4);
+        else return this.buffer.readUInt32LE((this.offset += 4) - 4);
+    }
+
     u64 = input => {
         if (input === -1) input = 0xFFFFFFFFFFFFFFFFn;
         if (this.isWriting) this.buffer.writeBigUInt64BE(BigInt(input), (this.offset += 8) - 8);
         else return Number(this.buffer.readBigUInt64BE((this.offset += 8) - 8));
+    }
+
+    u64le = input => {
+        if (input === -1) input = 0xFFFFFFFFFFFFFFFFn;
+        if (this.isWriting) this.buffer.writeBigUInt64LE(BigInt(input), (this.offset += 8) - 8);
+        else return Number(this.buffer.readBigUInt64LE((this.offset += 8) - 8));
     }
 
     f32 = input => {
