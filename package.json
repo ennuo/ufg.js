@@ -1,0 +1,28 @@
+{
+  "name": "ufg",
+  "version": "1.0.0",
+  "description": "A JavaScript library for interfacing with formats in UFG games, primarily LittleBigPlanet Karting.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ennuo/ufg.js.git"
+  },
+  "keywords": [
+    "karting",
+    "ufg",
+    "javascript",
+    "modding"
+  ],
+  "author": "ennuo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ennuo/ufg.js/issues"
+  },
+  "homepage": "https://github.com/ennuo/ufg.js#readme",
+  "dependencies": {
+    "@petamoriken/float16": "^3.4.7"
+  }
+}
