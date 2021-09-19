@@ -68,6 +68,17 @@ module.exports = class Bin {
         chunk.ID = readU32(0xC);
 
         switch (UID) {
+            case Types.BONE_DATA: {
+                const boneCount = readU32(0x44);
+                handle.offset = 0x100;
+                chunk.bones = [];
+                for (let i = 0; i < boneCount; ++i)
+                    chunk.bones.push({ name: handle.str(0x40) });
+                for (let i = 0; i < boneCount; ++i)
+                    chunk.bones[i].data = handle.bytes(0x8);
+                delete chunk.handle;
+                break;
+            }
             case Types.TEXTURE_METADATA: {
                 chunk.index = this.sections[Types.TEXTURE_DATA].length - 1;
                 chunk.width = readU16(0x4c);
