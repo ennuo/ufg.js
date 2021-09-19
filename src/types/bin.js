@@ -96,10 +96,35 @@ module.exports = class Bin {
                 break;
             }
             case Types.VERTEX_DATA: {
+
+                // JOINT DATA
+                // u8[4] boneIndices
+                // u8[4] boneWeights
+
+                // VERTEX DATA
+                // u16[3] xyz
+                // u8[13] unkData
+
+                // UV DATA
+                // f16[2] x0y0
+                // f16[2] x1y1
+
                 chunk.elementSize = readU32(0x4c);
                 chunk.elementCount = readU32(0x50);
                 handle.offset = 0xC0;
                 handle.setData(handle.bytes(chunk.elementSize * chunk.elementCount));
+                break;
+            }
+            case Types.MORPH_TARGETS: {
+                const count = readU32(0x40);
+                chunk.morphVertices = readU32(0x50);
+                handle.offset = 0x60;
+                chunk.morphs = [];
+                for (let i = 0; i < count; ++i)
+                    chunk.morphs.push({ ID: handle.u32() });
+                for (let i = 0; i < count; ++i)
+                    chunk.morphs[i].name = handle.str(0x40);
+                delete chunk.handle;
                 break;
             }
             case Types.MODEL_DEFINITION: { 
