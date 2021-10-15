@@ -56,29 +56,29 @@ const test_model_export = (tag) => {
     
         let morphs = [];
     
-        if (hoarde['TARGETS']) {
-            const morphDefinitions = bin.sections[ufg.Types.MORPH_TARGETS][hoarde['TARGETS']];
-            const morphVertices = bin.sections[ufg.Types.VERTEX_DATA][morphDefinitions.morphVertices]
-    
-            mesh.targets = [];
-            mesh.extras = {
-                targetNames: []
-            }
-    
-            for (const morph of morphDefinitions.morphs)
-                mesh.extras.targetNames.push(morph.name);
-    
-            for (let i = 0; i < morphDefinitions.morphs.length; ++i) {
-                const handle = morphVertices.handle; const morph = [];
-                for (let j = 0; j < morphVertices.elementCount / morphDefinitions.morphs.length; ++j) {
-                    morph.push([handle.s16(), handle.s16(), handle.s16()]);
-                    handle.offset += (0xC - 6);
+        try {
+            if (hoarde['TARGETS']) {
+                const morphDefinitions = bin.sections[ufg.Types.MORPH_TARGETS][hoarde['TARGETS']];
+                const morphVertices = bin.sections[ufg.Types.VERTEX_DATA][morphDefinitions.morphVertices]
+        
+                mesh.targets = [];
+                mesh.extras = {
+                    targetNames: []
                 }
-                morphs.push(morph);
+        
+                for (const morph of morphDefinitions.morphs)
+                    mesh.extras.targetNames.push(morph.name);
+        
+                for (let i = 0; i < morphDefinitions.morphs.length; ++i) {
+                    const handle = morphVertices.handle; const morph = [];
+                    for (let j = 0; j < morphVertices.elementCount / morphDefinitions.morphs.length; ++j) {
+                        morph.push([handle.s16(), handle.s16(), handle.s16()]);
+                        handle.offset += (0xC - 6);
+                    }
+                    morphs.push(morph);
+                }
             }
-        }
-    
-        morphs = [];
+        } catch { console.log('There was an error parsing morphs for %s', hoarde.name); morphs = []; }
     
         const vertexHandle = bin.sections[ufg.Types.VERTEX_DATA][primitive.attributes['VERTICES']];
     
