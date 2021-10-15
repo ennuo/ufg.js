@@ -1,5 +1,7 @@
 const ufg = require('./index');
 const fs = require('fs');
+const path = require('path');
+
 
 if (process.argv.length != 3) 
     return console.log('Usage: node run.js <bin>');
@@ -7,12 +9,13 @@ if (process.argv.length != 3)
 if (!fs.existsSync('./output'))
     fs.mkdirSync('./output');
 
+const binName = path.basename(process.argv[2], path.extname(process.argv[2]));
 const bin = new ufg.Bin(process.argv[2])
 
 const test_texture_export = () => {
     if (!bin.sections[ufg.Types.TEXTURE_METADATA]) return;
-    if (!fs.existsSync('./output/textures'))
-        fs.mkdirSync('./output/textures', { recursive: true });
+    if (!fs.existsSync(`./output/textures/${binName}`))
+        fs.mkdirSync(`./output/textures/${binName}`, { recursive: true });
     for (let i = 0; i < Object.keys(bin.sections[ufg.Types.TEXTURE_METADATA]).length; ++i) {
         let index = i;
         const key = Object.keys(bin.sections[ufg.Types.TEXTURE_METADATA])[index];
@@ -32,7 +35,7 @@ const test_texture_export = () => {
         }
 
         console.log('Writing %s', descriptor.name);
-        fs.writeFileSync(`output/textures/${descriptor.name}.dds`, 
+        fs.writeFileSync(`output/textures/${binName}/${descriptor.name}.dds`, 
         Buffer.concat([ 
             ufg.Tools.DDS.getDDSHeader(descriptor.type, descriptor.width, descriptor.height, descriptor.mipmaps), 
             texture ]
@@ -42,8 +45,8 @@ const test_texture_export = () => {
 }
 
 const test_model_export = (tag) => {
-    if (!fs.existsSync('./output/models'))
-        fs.mkdirSync('./output/models', { recursive: true });
+    if (!fs.existsSync(`./output/models/${binName}`))
+        fs.mkdirSync(`./output/models/${binName}`, { recursive: true });
 
     const hoarde = bin.sections[ufg.Types.MODEL_DEFINITION][tag];
 
@@ -176,7 +179,7 @@ const test_model_export = (tag) => {
         glb.nodes.push(node);
     
         console.log('Writing %s', hoarde.name);
-        glb.save(`output/models/${hoarde.name}.GLB`);
+        glb.save(`output/models/${binName}/${hoarde.name}.GLB`);
     } catch { console.log("An error occurred when parsing %s", hoarde.name); }
 }
 
