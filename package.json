@@ -1,5 +1,5 @@
 {
-  "name": "ufg",
+  "name": "ufg.js",
   "version": "1.0.0",
   "description": "A JavaScript library for interfacing with formats in UFG games, primarily LittleBigPlanet Karting.",
   "main": "index.js",
