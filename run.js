@@ -87,19 +87,27 @@ const test_model_export = (tag) => {
     
         const texHandle = bin.sections[ufg.Types.VERTEX_DATA][primitive.attributes['TEXCOORDS']];
         const indexHandle = bin.sections[ufg.Types.VERTEX_DATA][primitive.indices];
-    
+
         const vertexBuffer = new ufg.Data(vertexHandle.elementCount * 0xC);
-        for (let i = 0; i < vertexHandle.elementCount; ++i) {
-    
-            vertexHandle.handle.offset = i * 0x10;
-    
-            vertexBuffer.f32le(vertexHandle.handle.s16());
-            vertexBuffer.f32le(vertexHandle.handle.s16());
-            vertexBuffer.f32le(vertexHandle.handle.s16());
-        }
+        if (primitive.type == ufg.Types.SKINNED_MESH) {
+            for (let i = 0; i < vertexHandle.elementCount; ++i) {
+        
+                vertexHandle.handle.offset = i * 0x10;
+        
+                vertexBuffer.f32le(vertexHandle.handle.s16());
+                vertexBuffer.f32le(vertexHandle.handle.s16());
+                vertexBuffer.f32le(vertexHandle.handle.s16());
+            }
+        } else if (primitive.type == ufg.Types.STATIC_MESH) {
+            for (let i = 0; i < vertexHandle.elementCount; ++i) {
+                vertexHandle.handle.offset = i * 0x6;
+                vertexBuffer.f32le(vertexHandle.handle.f16());
+                vertexBuffer.f32le(vertexHandle.handle.f16());
+                vertexBuffer.f32le(vertexHandle.handle.f16());
+            }
+        } else throw new Error('Unknown Mesh Type: ' + primitive.type.toString(16));
     
         glb.createBufferView('VERTICES', 0, vertexBuffer.length);
-    
         let buffer = Buffer.concat([vertexBuffer.buffer, indexHandle.handle.buffer.swap16() ]);
     
         glb.createBufferView('INDICES', vertexBuffer.length, indexHandle.handle.buffer.length);
@@ -108,18 +116,24 @@ const test_model_export = (tag) => {
         for (let i = 0; i < texHandle.elementCount; ++i) {
             
             const channels = [];
-    
-            channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
-            channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
+
+            let count = texHandle.elementSize / 0x4;
+            for (let j = 0; j < count; ++j)
+                channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
     
             texCoords.push(channels);
         }
-    
-        const channelCount = isNaN(texCoords[0][1][0]) ? 1 : 2; 
+
+
+        let channelCount = 0;
+        if (texCoords[0])
+            for (let i = 0; i < texCoords[0].length; ++i)
+                if (!isNaN(texCoords[0][i][0])) channelCount++;
+
         for (let i = 0; i < channelCount; ++i) {
             const uvStart = buffer.length;
             const channelBuffer = new ufg.Data(0x8 * texHandle.elementCount);
-    
+            
             for (let j = 0; j < texHandle.elementCount; ++j) {
                 channelBuffer.f32le(texCoords[j][i][0]);
                 channelBuffer.f32le(texCoords[j][i][1]);
@@ -168,7 +182,9 @@ const test_model_export = (tag) => {
             indices: glb.createAccessor('INDICES', ufg.IO.GLB.ComponentType.UNSIGNED_SHORT, indexHandle.elementCount, 'SCALAR'),
         });
     
-        const boneHandle = bin.sections[ufg.Types.BONE_DATA][hoarde['JOINTS']];
+        if (hoarde['JOINTS']) {
+            const boneHandle = bin.sections[ufg.Types.BONE_DATA][hoarde['JOINTS']];
+        }
     
         const node = {
             name: hoarde.name,
@@ -180,7 +196,7 @@ const test_model_export = (tag) => {
     
         console.log('Writing %s', hoarde.name);
         glb.save(`output/models/${binName}/${hoarde.name}.GLB`);
-    } catch { console.log("An error occurred when parsing %s", hoarde.name); }
+    } catch (e) { console.log("An error occurred when parsing %s", hoarde.name); console.error(e); }
 }
 
 console.log

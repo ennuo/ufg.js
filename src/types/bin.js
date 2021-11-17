@@ -162,16 +162,22 @@ module.exports = class Bin {
                     // should probably find some way to detect this later
 
                     const BASE = 0xE0 + (i * 0xA0);
-                    chunk['PRIMITIVES'].push({
+                    const primitive = {
                         attributes: {
-                            VERTICES: readU32(BASE + 0x5c),
-                            WEIGHTS: readU32(BASE + 0x6c),
                             TEXCOORDS: readU32(BASE + 0x7c),
                         },
                         material: readU32(BASE + 0x2c),
                         type: readU32(BASE + 0x3c), // C3 09 2F 93 = SkinnedMesh, 28 1C C2 B5 = StaticMesh
                         indices: readU32(BASE + 0x4c),
-                    }); 
+                    }
+
+                    primitive.attributes['VERTICES'] = 
+                        readU32(BASE + ((primitive.type == Types.STATIC_MESH) ? 0x6c : 0x5c));
+
+                    if (primitive.type == Types.SKINNED_MESH)
+                        primitive.attributes['WEIGHTS'] = readU32(BASE + 0x6c);
+                        
+                    chunk['PRIMITIVES'].push(primitive);
                 }
                 delete chunk.handle;
                 break;
