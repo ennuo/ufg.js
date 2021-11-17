@@ -3,14 +3,17 @@ const fs = require('fs');
 const path = require('path');
 
 
-if (process.argv.length != 3) 
-    return console.log('Usage: node run.js <bin>');
+if (process.argv.length < 3 || process.argv.length > 4) {
+    console.log('Usage: node run.js <.bin>');
+    return console.log('Usage: node run.js <.perm.bin> <.temp.bin>')
+}
 
 if (!fs.existsSync('./output'))
     fs.mkdirSync('./output');
 
 const binName = path.basename(process.argv[2], path.extname(process.argv[2]));
 const bin = new ufg.Bin(process.argv[2])
+const tempBin = process.argv[3] ? new ufg.Bin(process.argv[3]) : null;
 
 const test_texture_export = () => {
     if (!bin.sections[ufg.Types.TEXTURE_METADATA]) return;
@@ -133,7 +136,7 @@ const test_model_export = (tag) => {
         for (let i = 0; i < channelCount; ++i) {
             const uvStart = buffer.length;
             const channelBuffer = new ufg.Data(0x8 * texHandle.elementCount);
-            
+
             for (let j = 0; j < texHandle.elementCount; ++j) {
                 channelBuffer.f32le(texCoords[j][i][0]);
                 channelBuffer.f32le(texCoords[j][i][1]);
@@ -199,7 +202,22 @@ const test_model_export = (tag) => {
     } catch (e) { console.log("An error occurred when parsing %s", hoarde.name); console.error(e); }
 }
 
-console.log
+if (tempBin != null) {
+    const buffer = tempBin.sections[ufg.Types.TEXTURE_DATA][0].buffer;
+    if (!fs.existsSync(`./output/textures/${binName}`))
+        fs.mkdirSync(`./output/textures/${binName}`, { recursive: true });
+    for (const key of Object.keys(bin.sections[ufg.Types.TEXTURE_METADATA])) {
+        const descriptor = bin.sections[ufg.Types.TEXTURE_METADATA][key];
+        console.log('Writing %s', descriptor.name);
+        fs.writeFileSync(`output/textures/${binName}/${descriptor.name}.dds`, 
+            Buffer.concat([ 
+            ufg.Tools.DDS.getDDSHeader(descriptor.type, descriptor.width, descriptor.height, descriptor.mipmaps), 
+            buffer.slice(descriptor.offset, descriptor.offset + descriptor.size) ]
+        ));
+    }
+
+    return;
+}
 
 test_texture_export();
 if (bin.sections[ufg.Types.MODEL_DEFINITION])

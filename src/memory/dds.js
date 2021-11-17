@@ -44,8 +44,8 @@ module.exports = class Texture {
             case 'DXT5': DDSPF_DXT5.forEach(x => header.u32le(x)); break;
             case 'DXT1': DDSPF_DXT1.forEach(x => header.u32le(x)); break;
             case 'DXT3': DDSPF_DXT3.forEach(x => header.u32le(x)); break;
+            case 'ARGB': DDSPF_A8R8G8B8.forEach(x => header.u32le(x)); break;
             /*
-            case 0x3: DDSPF_A8R8G8B8.forEach(x => header.u32le(x)); break;
             case 0x4: DDSPF_R5G6B5.forEach(x => header.u32le(x)); break;
             case 0x5: DDSPF_A4R4G4B4.forEach(x => header.u32le(x)); break;
             case 0x17: DDSPF_DXT3.forEach(x => header.u32le(x)); break;

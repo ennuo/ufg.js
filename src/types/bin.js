@@ -80,19 +80,28 @@ module.exports = class Bin {
                 break;
             }
             case Types.TEXTURE_METADATA: {
-                chunk.index = this.sections[Types.TEXTURE_DATA].length - 1;
+                if (this.sections[Types.TEXTURE_DATA])
+                    chunk.index = this.sections[Types.TEXTURE_DATA].length - 1;
                 chunk.width = readU16(0x4c);
                 chunk.height = readU16(0x4e);
                 chunk.mipmaps = handle.buffer[0x50];
 
-                switch (readU32(0x54)) {
-                    case 0x2782CCE6: chunk.type = 'DXT1'; break;
-                    case 0x2B068C0A: chunk.type = 'DXT3'; break;
-                    case 0xA3833FDE: chunk.type = 'DXT5'; break;
-                    default: chunk.type = 'UNKNOWN';
+                switch (handle.buffer[0x44]) {
+                    case 0: chunk.type = 'ARGB'; break;
+                    case 1: chunk.type = 'DXT1'; break;
+                    case 2: chunk.type = 'DXT3'; break;
+                    case 3: chunk.type = 'DXT5'; break;
+                    default: {
+                        console.log(handle.buffer[0x44]);
+                        chunk.type = 'UNKNOWN';
+                    }
                 }
 
-                //delete chunk.handle;
+                chunk.offset = readU32(0x70);
+                chunk.size = readU32(0x74);
+
+                delete chunk.handle;
+                
                 break;
             }
             case Types.VERTEX_DATA: {
