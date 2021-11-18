@@ -1,8 +1,6 @@
 const ufg = require('./index');
 const fs = require('fs');
 const path = require('path');
-const { Types } = require('./index');
-
 
 if (process.argv.length < 3 || process.argv.length > 4) {
     console.log('Usage: node run.js <.bin>');
