@@ -13,6 +13,8 @@ npm install
 
 # Usage
 
+**If you are trying to extract models from Modnation Racing, set `isLBPKarting` in `config.json` to `false`.**
+
 To extract all models and textures from a BIN file, use the following command:
 ```bash
 node run.js <.BIN>
