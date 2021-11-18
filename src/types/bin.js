@@ -101,7 +101,7 @@ module.exports = class Bin {
                 chunk.size = readU32(0x74);
 
                 delete chunk.handle;
-                
+
                 break;
             }
             case Types.VERTEX_DATA: {
@@ -185,6 +185,11 @@ module.exports = class Bin {
 
                     if (primitive.type == Types.SKINNED_MESH)
                         primitive.attributes['WEIGHTS'] = readU32(BASE + 0x6c);
+                    else if (primitive.type == 0x84f3d188 || primitive.type == 0x36c8d076 || primitive.type == 0xea4974ca) {
+                        primitive.attributes['VERTICES'] = readU32(BASE + 0x7C);
+                        primitive.attributes['TEXCOORDS'] = readU32(BASE + 0x8c);
+                        primitive.indices = readU32(BASE + 0x5c);
+                    }
                         
                     chunk['PRIMITIVES'].push(primitive);
                 }

@@ -101,7 +101,7 @@ const test_model_export = (tag) => {
                 vertexBuffer.f32le(vertexHandle.handle.s16());
                 vertexBuffer.f32le(vertexHandle.handle.s16());
             }
-        } else if (primitive.type == ufg.Types.STATIC_MESH) {
+        } else if (primitive.type == ufg.Types.STATIC_MESH || primitive.type == 0x84f3d188 || primitive.type == 0x36c8d076 || primitive.type == 0xea4974ca) {
             for (let i = 0; i < vertexHandle.elementCount; ++i) {
                 vertexHandle.handle.offset = i * 0x6;
                 vertexBuffer.f32le(vertexHandle.handle.f16());
