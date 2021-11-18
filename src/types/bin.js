@@ -180,15 +180,16 @@ module.exports = class Bin {
                         indices: readU32(BASE + 0x4c),
                     }
 
-                    primitive.attributes['VERTICES'] = 
-                        readU32(BASE + ((primitive.type == Types.STATIC_MESH) ? 0x6c : 0x5c));
-
-                    if (primitive.type == Types.SKINNED_MESH)
+                    if (primitive.type == Types.SKINNED_MESH) {
                         primitive.attributes['WEIGHTS'] = readU32(BASE + 0x6c);
+                        primitive.attributes['VERTICES'] = readU32(BASE + 0x5C);
+                    } else if (primitive.type == Types.STATIC_MESH || primitive.type == Types.KART_MESH) {
+                        primitive.attributes['VERTICES'] = readU32(BASE + 0x6c);
+                    }
                     else if (primitive.type == 0x84f3d188 || primitive.type == 0x36c8d076 || primitive.type == 0xea4974ca) {
-                        primitive.attributes['VERTICES'] = readU32(BASE + 0x7C);
-                        primitive.attributes['TEXCOORDS'] = readU32(BASE + 0x8c);
                         primitive.indices = readU32(BASE + 0x5c);
+                        primitive.attributes['VERTICES'] = readU32(BASE + 0x7c);
+                        primitive.attributes['TEXCOORDS'] = readU32(BASE + 0x8c);
                     }
                         
                     chunk['PRIMITIVES'].push(primitive);
