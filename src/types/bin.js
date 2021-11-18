@@ -74,8 +74,9 @@ module.exports = class Bin {
                 chunk.bones = [];
                 for (let i = 0; i < boneCount; ++i)
                     chunk.bones.push({ name: handle.str(0x40) });
-                for (let i = 0; i < boneCount; ++i)
-                    chunk.bones[i].data = handle.bytes(0x8);
+                if (process.env.IS_LBP_KARTING === true)
+                    for (let i = 0; i < boneCount; ++i)
+                        chunk.bones[i].data = handle.bytes(0x8);
                 delete chunk.handle;
                 break;
             }
@@ -143,34 +144,7 @@ module.exports = class Bin {
                 chunk['TARGETS'] = readU32(0x88);
                 //chunk['SELECTIONS'] = readU32(0xE0 + (primitiveCount * 0xA0) + 0x8);
                 for (let i = 0; i < 1; ++i) {
-
-
-
-                    /*
-
-                    SkinnedMesh
-
-                    Material: 0x2c,
-                    Indices: 0x4c
-                    Vertices: 0x5C,
-                    Weights: 0x6c,
-                    TexCoords: 0x7c,
-
-                    StaticMesh:
-
-                    Material 0x2c,
-                    Indices: 0x4c
-                    UNK: 0x5c
-                    UNK2: 0x6c
-                    UNK3: 0x7c
-
-                    */
-                    
-                    // B0 MNR
-                    // E0 KARTING
-                    // should probably find some way to detect this later
-
-                    const BASE = 0xE0 + (i * 0xA0);
+                    const BASE = ((process.env.IS_LBP_KARTING === true) ? 0xE0 : 0xB0) + (i * 0xA0);
                     const PRIMITIVE_BASE = BASE + 0x10 + readU32(BASE + 0x10) + 0xC;
 
                     const primitive = {

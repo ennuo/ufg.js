@@ -1,6 +1,7 @@
 const ufg = require('./index');
 const fs = require('fs');
 const path = require('path');
+process.env.IS_LBP_KARTING = require('./config.json').isLBPKarting;
 
 if (process.argv.length < 3 || process.argv.length > 4) {
     console.log('Usage: node run.js <.bin>');
@@ -47,6 +48,7 @@ const test_texture_export = () => {
 }
 
 const test_model_export = (tag) => {
+    if (tag != 0x7E103A65) return;
     if (!fs.existsSync(`./output/models/${binName}`))
         fs.mkdirSync(`./output/models/${binName}`, { recursive: true });
 
@@ -119,9 +121,14 @@ const test_model_export = (tag) => {
             
             const channels = [];
 
-            let count = texHandle.elementSize / 0x4;
-            for (let j = 0; j < count; ++j)
+            if (process.env.IS_LBP_KARTING === true) {
+                let count = texHandle.elementSize / 0x4;
+                for (let j = 0; j < count; ++j)
+                    channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
+            } else {
                 channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
+                texHandle.offset += (texHandle.elementSize) - 4;
+            }
     
             texCoords.push(channels);
         }
