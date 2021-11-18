@@ -48,7 +48,6 @@ const test_texture_export = () => {
 }
 
 const test_model_export = (tag) => {
-    if (tag != 0x7E103A65) return;
     if (!fs.existsSync(`./output/models/${binName}`))
         fs.mkdirSync(`./output/models/${binName}`, { recursive: true });
 
