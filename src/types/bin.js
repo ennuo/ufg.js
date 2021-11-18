@@ -171,27 +171,23 @@ module.exports = class Bin {
                     // should probably find some way to detect this later
 
                     const BASE = 0xE0 + (i * 0xA0);
+                    const PRIMITIVE_BASE = BASE + 0x10 + readU32(BASE + 0x10) + 0xC;
+
                     const primitive = {
                         attributes: {
-                            TEXCOORDS: readU32(BASE + 0x7c),
+                            TEXCOORDS: readU32(PRIMITIVE_BASE + 0x50),
                         },
-                        material: readU32(BASE + 0x2c),
-                        type: readU32(BASE + 0x3c), // C3 09 2F 93 = SkinnedMesh, 28 1C C2 B5 = StaticMesh
-                        indices: readU32(BASE + 0x4c),
+                        material: readU32(PRIMITIVE_BASE),
+                        type: readU32(PRIMITIVE_BASE + 0x10), // C3 09 2F 93 = SkinnedMesh, 28 1C C2 B5 = StaticMesh
+                        indices: readU32(PRIMITIVE_BASE + 0x20),
                     }
 
                     if (primitive.type == Types.SKINNED_MESH) {
-                        primitive.attributes['WEIGHTS'] = readU32(BASE + 0x6c);
-                        primitive.attributes['VERTICES'] = readU32(BASE + 0x5C);
-                    } else if (primitive.type == Types.STATIC_MESH || primitive.type == Types.KART_MESH) {
-                        primitive.attributes['VERTICES'] = readU32(BASE + 0x6c);
-                    }
-                    else if (primitive.type == 0x84f3d188 || primitive.type == 0x36c8d076 || primitive.type == 0xea4974ca) {
-                        primitive.indices = readU32(BASE + 0x5c);
-                        primitive.attributes['VERTICES'] = readU32(BASE + 0x7c);
-                        primitive.attributes['TEXCOORDS'] = readU32(BASE + 0x8c);
-                    }
-                        
+                        primitive.attributes['WEIGHTS'] = readU32(PRIMITIVE_BASE + 0x40);
+                        primitive.attributes['VERTICES'] = readU32(PRIMITIVE_BASE + 0x30);
+                    } else if (primitive.type == Types.STATIC_MESH || primitive.type == Types.KART_MESH)
+                        primitive.attributes['VERTICES'] = readU32(PRIMITIVE_BASE + 0x40);
+
                     chunk['PRIMITIVES'].push(primitive);
                 }
                 delete chunk.handle;

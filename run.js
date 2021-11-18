@@ -100,7 +100,7 @@ const test_model_export = (tag) => {
                 vertexBuffer.f32le(vertexHandle.handle.s16());
                 vertexBuffer.f32le(vertexHandle.handle.s16());
             }
-        } else if (primitive.type == ufg.Types.STATIC_MESH || primitive.type == 0x84f3d188 || primitive.type == 0x36c8d076 || primitive.type == 0xea4974ca || primitive.type == ufg.Types.KART_MESH) {
+        } else if (primitive.type == ufg.Types.STATIC_MESH || primitive.type == ufg.Types.KART_MESH) {
             for (let i = 0; i < vertexHandle.elementCount; ++i) {
                 vertexHandle.handle.offset = i * 0x6;
                 vertexBuffer.f32le(vertexHandle.handle.f16());
@@ -198,7 +198,7 @@ const test_model_export = (tag) => {
     
         console.log('Writing %s', hoarde.name);
         glb.save(`output/models/${binName}/${hoarde.name}.GLB`);
-    } catch (e) { console.log("An error occurred when parsing %s", hoarde.name); console.error(e); }
+    } catch (e) { console.log("An error occurred when parsing %s", hoarde.name); }
 }
 
 if (tempBin != null) {
