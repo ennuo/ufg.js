@@ -74,7 +74,7 @@ module.exports = class Bin {
                 chunk.bones = [];
                 for (let i = 0; i < boneCount; ++i)
                     chunk.bones.push({ name: handle.str(0x40) });
-                if (process.env.IS_LBP_KARTING === true)
+                if (process.IS_LBP_KARTING === true)
                     for (let i = 0; i < boneCount; ++i)
                         chunk.bones[i].data = handle.bytes(0x8);
                 delete chunk.handle;
@@ -144,7 +144,7 @@ module.exports = class Bin {
                 chunk['TARGETS'] = readU32(0x88);
                 //chunk['SELECTIONS'] = readU32(0xE0 + (primitiveCount * 0xA0) + 0x8);
                 for (let i = 0; i < 1; ++i) {
-                    const BASE = ((process.env.IS_LBP_KARTING === true) ? 0xE0 : 0xB0) + (i * 0xA0);
+                    const BASE = ((process.IS_LBP_KARTING === true) ? 0xE0 : 0xB0) + (i * 0xA0);
                     const PRIMITIVE_BASE = BASE + 0x10 + readU32(BASE + 0x10) + 0xC;
 
                     const primitive = {
