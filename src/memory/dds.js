@@ -35,7 +35,7 @@ module.exports = class Texture {
         header.u32le(height);
         header.u32le(width);
         header.u32le(0 /* dwPitchOrLinearSize */); header.u32le(0 /*dwDepth */);
-        header.u32le(mips + 1);
+        header.u32le(mips);
         for (let i = 0; i < 11; ++i)
             header.u32le(0 /* dwReserved[11] */);
 
