@@ -68,6 +68,21 @@ module.exports = class Bin {
         chunk.ID = readU32(0xC);
 
         switch (UID) {
+            case Types.INDEX: {
+                const indexCount = readU32(0x44);
+                chunk.entries = [];
+                for (let i = 0; i < indexCount; ++i) {
+                    chunk.entries.push({
+                        UID: handle.u32(),
+                        size: handle.u32(),
+                        unk1: handle.u32(),
+                        offset: handle.u32(),
+                        unk2: handle.u32()
+                    });
+                }
+                delete chunk.handle;
+                break;
+            }
             case Types.BONE_DATA: {
                 const boneCount = readU32(0x44);
                 handle.offset = 0x100;
@@ -86,6 +101,8 @@ module.exports = class Bin {
                 chunk.width = readU16(0x4c);
                 chunk.height = readU16(0x4e);
                 chunk.mipmaps = handle.buffer[0x50];
+
+                chunk.textureUID = readU32(0x64);
 
                 switch (handle.buffer[0x44]) {
                     case 0: chunk.type = 'ARGB'; break;

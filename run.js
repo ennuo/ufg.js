@@ -5,6 +5,7 @@ process.IS_LBP_KARTING = require('./config.json').isLBPKarting;
 
 if (process.argv.length < 3 || process.argv.length > 4) {
     console.log('Usage: node run.js <.bin>');
+    console.log('Usage: node run.js <.idx>');
     return console.log('Usage: node run.js <.perm.bin> <.temp.bin>')
 }
 
@@ -224,7 +225,52 @@ if (tempBin != null) {
     return;
 }
 
-test_texture_export();
-if (bin.sections[ufg.Types.MODEL_DEFINITION])
-    for (const tag of Object.keys(bin.sections[ufg.Types.MODEL_DEFINITION]))
-        test_model_export(tag);
+const indexSection = bin.sections[ufg.Types.INDEX];
+if (indexSection) {
+    const index = indexSection[Object.keys(indexSection)[0]];
+    const path = index.name.toUpperCase() + '.BIN';
+    if (!path.includes('TEXTUREPACK')) return console.error('Index support is only for texture packs at the moment!');
+    if (!fs.existsSync(path))
+        return console.error(path + ' is missing!');
+    const binData = fs.readFileSync(path);
+
+    const info = {};
+    const data = {};
+
+    for (const entry of index.entries) {
+        const slice = new ufg.Bin(binData.slice(entry.offset, entry.offset + entry.size));
+
+        if (slice.sections[ufg.Types.TEXTURE_METADATA]) {
+            const section = slice.sections[ufg.Types.TEXTURE_METADATA];
+            info[entry.UID] = section[Object.keys(section)[0]];
+        }
+        else if (slice.sections[ufg.Types.TEXTURE_DATA])
+            data[entry.UID] = slice.sections[ufg.Types.TEXTURE_DATA][0];
+        else throw new Error('UNHANDLED!');
+
+    }
+
+    if (!fs.existsSync(`./output/textures/${binName}`))
+        fs.mkdirSync(`./output/textures/${binName}`, { recursive: true });
+    for (const textureInfo of Object.values(info)) {
+        const textureData = data[textureInfo.textureUID];
+        if (!textureData) throw new Error('MISSING TEXTURE!');
+        console.log('Writing %s', textureInfo.name);
+        fs.writeFileSync(
+            `output/textures/${binName}/${textureInfo.name}.dds`, 
+            Buffer.concat([ 
+                ufg.Tools.DDS.getDDSHeader(textureInfo.type, textureInfo.width, textureInfo.height, textureInfo.mipmaps), 
+                textureData.buffer 
+        ]));
+    }
+    
+
+
+
+
+} else {
+    test_texture_export();
+    if (bin.sections[ufg.Types.MODEL_DEFINITION])
+        for (const tag of Object.keys(bin.sections[ufg.Types.MODEL_DEFINITION]))
+            test_model_export(tag);
+}
