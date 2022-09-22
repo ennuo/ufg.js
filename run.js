@@ -102,14 +102,23 @@ const test_model_export = (tag) => {
                 vertexBuffer.f32le(vertexHandle.handle.s16());
                 vertexBuffer.f32le(vertexHandle.handle.s16());
             }
-        } else if (primitive.type == ufg.Types.STATIC_MESH || primitive.type == ufg.Types.KART_MESH) {
+        } else if (primitive.type == ufg.Types.STATIC_MESH_F16 || primitive.type == ufg.Types.KART_MESH) {
             for (let i = 0; i < vertexHandle.elementCount; ++i) {
                 vertexHandle.handle.offset = i * 0x6;
                 vertexBuffer.f32le(vertexHandle.handle.f16());
                 vertexBuffer.f32le(vertexHandle.handle.f16());
                 vertexBuffer.f32le(vertexHandle.handle.f16());
             }
-        } else throw new Error('Unknown Mesh Type: ' + primitive.type.toString(16));
+        } else if (primitive.type == ufg.Types.STATIC_MESH_F32) {
+            for (let i = 0; i < vertexHandle.elementCount; ++i) {
+                vertexHandle.handle.offset = i * 0xC;
+                vertexBuffer.f32le(vertexHandle.handle.f32());
+                vertexBuffer.f32le(vertexHandle.handle.f32());
+                vertexBuffer.f32le(vertexHandle.handle.f32());
+            }
+        } 
+        
+        else throw new Error('Unknown Mesh Type: ' + primitive.type.toString(16));
     
         glb.createBufferView('VERTICES', 0, vertexBuffer.length);
         let buffer = Buffer.concat([vertexBuffer.buffer, indexHandle.handle.buffer.swap16() ]);
@@ -121,14 +130,14 @@ const test_model_export = (tag) => {
             
             const channels = [];
 
-            if (process.IS_LBP_KARTING === true) {
+            // if (process.IS_LBP_KARTING === true) {
                 let count = texHandle.elementSize / 0x4;
                 for (let j = 0; j < count; ++j)
                     channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
-            } else {
-                channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
-                texHandle.offset += (texHandle.elementSize) - 4;
-            }
+            // } else {
+            //     channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
+            //     texHandle.offset += (texHandle.elementSize) - 4;
+            // }
     
             texCoords.push(channels);
         }

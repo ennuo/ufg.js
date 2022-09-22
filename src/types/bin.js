@@ -162,6 +162,7 @@ module.exports = class Bin {
                 //chunk['SELECTIONS'] = readU32(0xE0 + (primitiveCount * 0xA0) + 0x8);
                 for (let i = 0; i < 1; ++i) {
                     const BASE = ((process.IS_LBP_KARTING === true) ? 0xE0 : 0xB0) + (i * 0xA0);
+
                     const PRIMITIVE_BASE = BASE + 0x10 + readU32(BASE + 0x10) + 0xC;
 
                     const primitive = {
@@ -173,10 +174,11 @@ module.exports = class Bin {
                         indices: readU32(PRIMITIVE_BASE + 0x20),
                     }
 
+                    console.log(primitive.type);
                     if (primitive.type == Types.SKINNED_MESH) {
                         primitive.attributes['WEIGHTS'] = readU32(PRIMITIVE_BASE + 0x40);
                         primitive.attributes['VERTICES'] = readU32(PRIMITIVE_BASE + 0x30);
-                    } else if (primitive.type == Types.STATIC_MESH || primitive.type == Types.KART_MESH)
+                    } else if (primitive.type == Types.STATIC_MESH_F16 || primitive.type == Types.KART_MESH || primitive.type == Types.STATIC_MESH_F32)
                         primitive.attributes['VERTICES'] = readU32(PRIMITIVE_BASE + 0x40);
 
                     chunk['PRIMITIVES'].push(primitive);
