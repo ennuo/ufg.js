@@ -130,14 +130,14 @@ const test_model_export = (tag) => {
             
             const channels = [];
 
-            // if (process.IS_LBP_KARTING === true) {
+            if (primitive.type == ufg.Types.KART_MESH) {
+                channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
+                texHandle.offset += (texHandle.elementSize) - 4;
+            } else {
                 let count = texHandle.elementSize / 0x4;
                 for (let j = 0; j < count; ++j)
                     channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
-            // } else {
-            //     channels.push([ texHandle.handle.f16(), texHandle.handle.f16() ]);
-            //     texHandle.offset += (texHandle.elementSize) - 4;
-            // }
+            }
     
             texCoords.push(channels);
         }
@@ -227,7 +227,7 @@ if (tempBin != null) {
         fs.writeFileSync(`output/textures/${binName}/${descriptor.name}.dds`, 
             Buffer.concat([ 
             ufg.Tools.DDS.getDDSHeader(descriptor.type, descriptor.width, descriptor.height, descriptor.mipmaps), 
-            buffer.slice(descriptor.offset, descriptor.offset + descriptor.size) ]
+            buffer.slice(descriptor.offset + 0x40, descriptor.offset + 0x40 + descriptor.size) ]
         ));
     }
 
