@@ -115,8 +115,13 @@ module.exports = class Bin {
                     }
                 }
 
-                chunk.offset = readU32(0x70);
-                chunk.size = readU32(0x74);
+                if (process.IS_LBP_KARTING === true) {
+                    chunk.offset = readU32(0x70);
+                    chunk.size = readU32(0x74);
+                } else {
+                    chunk.offset = readU32(0x68);
+                    chunk.size = readU32(0x6c);
+                }
 
                 delete chunk.handle;
 
@@ -174,7 +179,6 @@ module.exports = class Bin {
                         indices: readU32(PRIMITIVE_BASE + 0x20),
                     }
 
-                    console.log(primitive.type);
                     if (primitive.type == Types.SKINNED_MESH) {
                         primitive.attributes['WEIGHTS'] = readU32(PRIMITIVE_BASE + 0x40);
                         primitive.attributes['VERTICES'] = readU32(PRIMITIVE_BASE + 0x30);
